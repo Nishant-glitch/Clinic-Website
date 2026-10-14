@@ -5,6 +5,9 @@ export interface DoctorInfo {
   specialization: string;
   registrationNumber: string;
   bio: string;
+  photoUrl: string;
+  opdHours: string;
+  consultationFeeNotice: string;
 }
 
 export interface ClinicAddress {
@@ -14,6 +17,7 @@ export interface ClinicAddress {
   state: string;
   pincode: string;
   fullAddress: string;
+  landmark: string;
 }
 
 export interface ClinicTimings {
@@ -22,6 +26,7 @@ export interface ClinicTimings {
   evening: string;
   sunday: string;
   emergencyNote: string;
+  isOpenToday: string;
 }
 
 export interface SocialLinks {
@@ -33,17 +38,25 @@ export interface SocialLinks {
 
 export interface SiteConfig {
   name: string;
+  shortName: string;
   tagline: string;
+  description: string;
   phone: string;
   phoneDisplay: string;
   whatsapp: string;
   whatsappDisplay: string;
+  whatsappMessage: string;
   email: string;
   doctor: DoctorInfo;
   address: ClinicAddress;
   timings: ClinicTimings;
   socialLinks: SocialLinks;
   mapEmbedUrl: string;
+  rating: {
+    score: number;
+    count: number;
+    platform: string;
+  };
 }
 
 /**
@@ -52,40 +65,53 @@ export interface SiteConfig {
  * In later stages, this can be synced/overridden with Firestore clinic settings.
  */
 export const siteConfig: SiteConfig = {
-  name: "Your Clinic Name",
+  name: "Dr. Sharma's Family Care Clinic",
+  shortName: "Family Care Clinic",
   tagline: "Comprehensive, Compassionate Healthcare for Your Family",
+  description: "Experienced medical consultation, preventive wellness checkups, and chronic illness management in a modern, hygienic facility.",
   phone: "+919876543210",
   phoneDisplay: "+91 98765 43210",
   whatsapp: "+919876543210",
   whatsappDisplay: "+91 98765 43210",
-  email: "contact@yourclinic.com",
+  whatsappMessage: "Hello, I would like to inquire about booking an appointment at the clinic.",
+  email: "care@sharmaclinic.in",
   doctor: {
-    name: "Dr. Clinic Doctor",
+    name: "Dr. Rajesh Sharma",
     qualification: "MBBS, MD (General Medicine)",
-    experience: "12+ Years Experience",
-    specialization: "General Physician & Consultant",
-    registrationNumber: "MCI-123456",
-    bio: "Dedicated healthcare professional providing patient-centric, evidence-based treatments and consultations.",
+    experience: "14+ Years Clinical Experience",
+    specialization: "Senior Physician & Consultant",
+    registrationNumber: "MCI-48291",
+    bio: "Dr. Sharma has over 14 years of clinical experience specializing in internal medicine, hypertension, diabetes control, and preventive family healthcare.",
+    photoUrl: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=800&q=80",
+    opdHours: "Mon - Sat: 10:00 AM - 1:30 PM & 5:30 PM - 9:00 PM",
+    consultationFeeNotice: "Transparent consultation fee payable at clinic desk",
   },
   address: {
-    street: "123 Health Avenue, Main Road",
-    area: "Near Central Square",
+    street: "Shop 12-14, Ground Floor, Royal Arcade",
+    area: "Opposite Grand Mall, Link Road",
     city: "Mumbai",
     state: "Maharashtra",
-    pincode: "400001",
-    fullAddress: "123 Health Avenue, Near Central Square, Main Road, Mumbai, Maharashtra 400001",
+    pincode: "400053",
+    fullAddress: "Shop 12-14, Royal Arcade, Opposite Grand Mall, Link Road, Andheri West, Mumbai, Maharashtra 400053",
+    landmark: "Opposite Grand Mall & 2 mins from Metro Station",
   },
   timings: {
     days: "Monday - Saturday",
     morning: "10:00 AM - 01:30 PM",
     evening: "05:30 PM - 09:00 PM",
     sunday: "Morning only (10:00 AM - 01:00 PM)",
-    emergencyNote: "Prior appointment recommended for consultations",
+    emergencyNote: "Prior appointment request recommended to ensure zero wait time",
+    isOpenToday: "Open Today: 10:00 AM - 9:00 PM",
   },
   socialLinks: {
-    facebook: "https://facebook.com/yourclinic",
-    instagram: "https://instagram.com/yourclinic",
-    youtube: "https://youtube.com/@yourclinic",
+    facebook: "https://facebook.com/sharmaclinic",
+    instagram: "https://instagram.com/sharmaclinic",
+    youtube: "https://youtube.com/@sharmaclinic",
   },
-  mapEmbedUrl: "https://maps.google.com/maps?q=Mumbai&t=&z=13&ie=UTF8&iwloc=&output=embed",
+  mapEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3769.8375826920173!2d72.833!3d19.123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTnCsDA3JzIyLjgiTiA3MsKwNDknNTguOCJF!5e0!3m2!1sen!2sin!4v1600000000000!5m2!1sen!2sin",
+  rating: {
+    score: 4.9,
+    count: 380,
+    platform: "Google Reviews",
+  },
 };

@@ -1,28 +1,45 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
+export type BadgeVariant =
+  | "secondary"
+  | "primary"
+  | "tertiary"
+  | "outline"
+  | "success"
+  | "error";
+
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: "primary" | "secondary" | "success" | "error" | "outline";
+  variant?: BadgeVariant;
+  size?: "sm" | "md";
+  icon?: React.ReactNode;
 }
 
-// TODO: In Step 3 (Frontend), implement MD3 badges/chips with icon support.
+const badgeVariants: Record<BadgeVariant, string> = {
+  secondary: "bg-md-secondary-container text-md-on-secondary-container",
+  primary: "bg-md-primary/15 text-md-primary font-semibold",
+  tertiary: "bg-md-tertiary/15 text-md-tertiary font-semibold",
+  outline: "border border-md-outline/40 text-md-on-surface-variant bg-transparent",
+  success: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300",
+  error: "bg-md-error-container text-md-on-error-container",
+};
+
 export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
-  ({ className, variant = "primary", children, ...props }, ref) => {
+  ({ className, variant = "secondary", size = "sm", icon, children, ...props }, ref) => {
     return (
       <span
         ref={ref}
         className={cn(
-          "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
-          variant === "primary" && "bg-primary-container text-on-primary-container",
-          variant === "secondary" && "bg-secondary-container text-on-secondary-container",
-          variant === "success" && "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
-          variant === "error" && "bg-error-container text-on-error-container",
-          variant === "outline" && "border border-outline-variant text-on-surface-variant",
+          "inline-flex items-center gap-1.5 rounded-full font-medium tracking-wide select-none transition-colors",
+          size === "sm" && "px-3 py-1 text-xs",
+          size === "md" && "px-4 py-1.5 text-sm",
+          badgeVariants[variant],
           className
         )}
         {...props}
       >
-        {children}
+        {icon}
+        <span>{children}</span>
       </span>
     );
   }

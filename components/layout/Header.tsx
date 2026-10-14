@@ -1,31 +1,91 @@
+"use client";
+
 import * as React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Phone, Calendar, Stethoscope } from "lucide-react";
 import { siteConfig } from "@/lib/config/site";
+import { ButtonLink } from "@/components/ui";
+import { MobileNav } from "./MobileNav";
+import { cn } from "@/lib/utils";
 
-// TODO: In Step 3 (Frontend), complete sticky header with quick phone/WhatsApp CTA, mobile menu drawer, and Book Appointment popup trigger.
+const navLinks = [
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About Us" },
+  { href: "/services", label: "Services" },
+  { href: "/gallery", label: "Gallery" },
+  { href: "/appointment", label: "Appointment" },
+  { href: "/contact", label: "Contact Us" },
+];
+
 export function Header() {
+  const pathname = usePathname();
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-outline-variant/30 bg-surface/90 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="text-xl font-bold tracking-tight text-primary">
-            {siteConfig.name}
-          </span>
+    <header className="sticky top-0 z-40 w-full bg-md-background/90 backdrop-blur-md border-b border-md-outline/10 transition-colors">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 h-20 flex items-center justify-between gap-4">
+        {/* Brand Logo */}
+        <Link
+          href="/"
+          className="flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-md-primary rounded-xl p-1"
+        >
+          <div className="h-10 w-10 md:h-11 md:w-11 rounded-2xl bg-md-primary text-md-on-primary flex items-center justify-center shadow-sm">
+            <Stethoscope className="h-6 w-6" aria-hidden="true" />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-bold text-base md:text-lg text-md-on-background tracking-tight leading-tight">
+              {siteConfig.name}
+            </span>
+            <span className="text-[11px] md:text-xs text-md-primary font-medium">
+              {siteConfig.doctor.name} • {siteConfig.doctor.qualification}
+            </span>
+          </div>
         </Link>
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-          <Link href="/about" className="hover:text-primary transition-colors">About Us</Link>
-          <Link href="/services" className="hover:text-primary transition-colors">Services</Link>
-          <Link href="/gallery" className="hover:text-primary transition-colors">Gallery</Link>
-          <Link href="/contact" className="hover:text-primary transition-colors">Contact</Link>
+
+        {/* Desktop Navigation Links */}
+        <nav className="hidden lg:flex items-center gap-1">
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ease-md",
+                  isActive
+                    ? "bg-md-secondary-container text-md-on-secondary-container font-semibold"
+                    : "text-md-on-surface-variant hover:text-md-on-background hover:bg-md-surface-container"
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
-        <div className="flex items-center gap-3">
-          <Link
+
+        {/* Actions (Desktop) */}
+        <div className="hidden sm:flex items-center gap-4">
+          <a
+            href={`tel:${siteConfig.phone}`}
+            className="hidden md:flex items-center gap-2 text-sm font-medium text-md-on-surface-variant hover:text-md-primary transition-colors py-2 px-3 rounded-full hover:bg-md-surface-container"
+            aria-label={`Call clinic at ${siteConfig.phoneDisplay}`}
+          >
+            <Phone className="h-4 w-4 text-md-primary" aria-hidden="true" />
+            <span>{siteConfig.phoneDisplay}</span>
+          </a>
+
+          <ButtonLink
             href="/appointment"
-            className="rounded-full bg-primary px-4 py-2 text-xs sm:text-sm font-medium text-on-primary shadow-sm hover:opacity-90 transition-opacity"
+            variant="filled"
+            size="md"
+            leftIcon={<Calendar className="h-4 w-4" aria-hidden="true" />}
           >
             Book Appointment
-          </Link>
+          </ButtonLink>
         </div>
+
+        {/* Mobile Nav Trigger */}
+        <MobileNav />
       </div>
     </header>
   );
