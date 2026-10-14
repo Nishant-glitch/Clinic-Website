@@ -1,0 +1,63 @@
+/**
+ * Material You (Material Design 3) Design Tokens
+ * Seed Color: #6750A4 (Purple)
+ */
+
+:root {
+  /* MD3 Color Palette (Light) */
+  --md-background: #FFFBFE;
+  --md-on-background: #1C1B1F;
+  --md-primary: #6750A4;
+  --md-on-primary: #FFFFFF;
+  --md-secondary-container: #E8DEF8;
+  --md-on-secondary-container: #1D192B;
+  --md-tertiary: #7D5260;
+  --md-surface-container: #F3EDF7;
+  --md-surface-container-low: #E7E0EC;
+  --md-outline: #79747E;
+  --md-on-surface-variant: #49454F;
+  --md-error: #BA1A1A;
+  --md-on-error: #FFFFFF;
+  --md-error-container: #FFDAD6;
+  --md-on-error-container: #410002;
+
+  /* Healthcare / Indian Clinic Accent Colors */
+  --clinic-whatsapp: #25D366;
+  --clinic-call: #0284C7;
+  --clinic-success: #15803D;
+
+  /* MD3 Corner Radius Scale */
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 28px;
+  --radius-2xl: 32px;
+  --radius-3xl: 48px;
+
+  /* Motion & Easing Tokens */
+  --md-motion-easing: cubic-bezier(0.2, 0, 0, 1);
+  --md-motion-duration-short: 200ms;
+  --md-motion-duration-medium: 300ms;
+  --md-motion-duration-long: 400ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --md-background: #141218;
+    --md-on-background: #E6E0E9;
+    --md-primary: #D0BCFF;
+    --md-on-primary: #381E72;
+    --md-secondary-container: #4A4458;
+    --md-on-secondary-container: #E8DEF8;
+    --md-tertiary: #EFB8C8;
+    --md-surface-container: #211F26;
+    --md-surface-container-low: #1D1B20;
+    --md-outline: #938F99;
+    --md-on-surface-variant: #CAC4D0;
+    --md-error: #FFB4AB;
+    --md-on-error: #690005;
+    --md-error-container: #93000A;
+    --md-on-error-container: #FFDAD6;
+  }
+}

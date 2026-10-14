@@ -1,0 +1,139 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+
+@theme {
+  --color-md-background: var(--md-background);
+  --color-md-on-background: var(--md-on-background);
+  --color-md-primary: var(--md-primary);
+  --color-md-on-primary: var(--md-on-primary);
+  --color-md-secondary-container: var(--md-secondary-container);
+  --color-md-on-secondary-container: var(--md-on-secondary-container);
+  --color-md-tertiary: var(--md-tertiary);
+  --color-md-surface-container: var(--md-surface-container);
+  --color-md-surface-container-low: var(--md-surface-container-low);
+  --color-md-outline: var(--md-outline);
+  --color-md-on-surface-variant: var(--md-on-surface-variant);
+  --color-md-error: var(--md-error);
+  --color-md-on-error: var(--md-on-error);
+  --color-md-error-container: var(--md-error-container);
+  --color-md-on-error-container: var(--md-on-error-container);
+
+  --color-whatsapp: var(--clinic-whatsapp);
+  --color-call: var(--clinic-call);
+  --color-success: var(--clinic-success);
+
+  /* Radius tokens */
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 28px;
+  --radius-2xl: 32px;
+  --radius-3xl: 48px;
+
+  /* Motion & Easing tokens */
+  --ease-md: cubic-bezier(0.2, 0, 0, 1);
+  --duration-short: 200ms;
+  --duration-medium: 300ms;
+  --duration-long: 400ms;
+
+  /* Font families */
+  --font-sans: var(--font-roboto), var(--font-noto-devanagari), system-ui, sans-serif;
+  --font-roboto: var(--font-roboto), sans-serif;
+  --font-devanagari: var(--font-noto-devanagari), sans-serif;
+}
+
+/* Material You Type Scale Utilities (scaled down one step on mobile) */
+@utility display-lg {
+  font-size: 44px;
+  line-height: 52px;
+  letter-spacing: -0.25px;
+  @variant sm {
+    font-size: 56px;
+    line-height: 64px;
+  }
+}
+
+@utility headline-lg {
+  font-size: 32px;
+  line-height: 40px;
+  @variant sm {
+    font-size: 48px;
+    line-height: 56px;
+  }
+}
+
+@utility headline-md {
+  font-size: 24px;
+  line-height: 32px;
+  @variant sm {
+    font-size: 32px;
+    line-height: 40px;
+  }
+}
+
+@utility title-lg {
+  font-size: 20px;
+  line-height: 26px;
+  @variant sm {
+    font-size: 24px;
+    line-height: 30px;
+  }
+}
+
+@utility body-lg {
+  font-size: 18px;
+  line-height: 26px;
+  @variant sm {
+    font-size: 20px;
+    line-height: 28px;
+  }
+}
+
+@utility body-md {
+  font-size: 14px;
+  line-height: 20px;
+  @variant sm {
+    font-size: 16px;
+    line-height: 24px;
+  }
+}
+
+@utility label-md {
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.5px;
+  @variant sm {
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+
+@utility label-sm {
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.5px;
+  @variant sm {
+    font-size: 12px;
+    line-height: 16px;
+  }
+}
+
+/* Base Body Styles */
+body {
+  background-color: var(--md-background);
+  color: var(--md-on-background);
+  font-family: var(--font-sans);
+}
+
+/* Global Prefers-Reduced-Motion Rule */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

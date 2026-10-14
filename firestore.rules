@@ -1,0 +1,74 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Auth helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function hasRole(roleName) {
+      return isAuthenticated() && request.auth.token.role == roleName;
+    }
+    
+    function isStaffOrAdmin() {
+      return isAuthenticated() && (request.auth.token.role in ['admin', 'staff']);
+    }
+
+    // Default: Deny all reads & writes unless explicitly permitted
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Protected Operational Data:
+    // Only authenticated users with custom claim role in ["admin", "staff"] can read.
+    // Client writes are disabled because submissions route securely through /api/* via Firebase Admin SDK.
+    match /appointments/{appointmentId} {
+      allow read: if isStaffOrAdmin();
+      allow update: if isStaffOrAdmin();
+      allow delete: if hasRole('admin');
+      allow create: if false; // Only Admin SDK creates appointments
+    }
+
+    match /contactMessages/{messageId} {
+      allow read: if isStaffOrAdmin();
+      allow update, delete: if hasRole('admin');
+      allow create: if false; // Only Admin SDK creates contact messages
+    }
+
+    // Public Content Collections:
+    // Read: Allowed for everyone (client fallback / caching)
+    // Write: Strictly restricted to role == 'admin'
+    match /services/{serviceId} {
+      allow read: if true;
+      allow write: if hasRole('admin');
+    }
+
+    match /galleryImages/{imageId} {
+      allow read: if true;
+      allow write: if hasRole('admin');
+    }
+
+    match /testimonials/{testimonialId} {
+      allow read: if true;
+      allow write: if hasRole('admin');
+    }
+
+    match /faqs/{faqId} {
+      allow read: if true;
+      allow write: if hasRole('admin');
+    }
+
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if hasRole('admin');
+    }
+
+    // Users Collection (Admin-only management, self profile read)
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || hasRole('admin'));
+      allow write: if hasRole('admin');
+    }
+  }
+}
