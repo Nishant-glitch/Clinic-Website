@@ -17,6 +17,7 @@ export interface AppointmentFilters {
   from?: string;
   to?: string;
   search?: string;
+  q?: string;
   sortBy?: "date" | "name" | "status";
   sortOrder?: "asc" | "desc";
   page?: number;
@@ -109,7 +110,8 @@ export async function listAppointments(
   if (filters.service && filters.service !== "all") params.set("service", filters.service);
   if (filters.from) params.set("from", filters.from);
   if (filters.to) params.set("to", filters.to);
-  if (filters.search) params.set("q", filters.search);
+  const query = filters.q || filters.search;
+  if (query) params.set("q", query);
   const limit = filters.limit || filters.pageSize || 20;
   params.set("limit", String(limit));
 

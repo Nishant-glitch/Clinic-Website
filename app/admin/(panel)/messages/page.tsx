@@ -30,25 +30,61 @@ function MessagesPageContent() {
   const { isAdmin } = useAdminAuth();
   const { showToast } = useAdminToast();
 
-  const [activeTab, setActiveTab] = React.useState<"all" | "unread">("all");
-  const [search, setSearch] = React.useState("");
-  const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const [deleteCandidate, setDeleteCandidate] = React.useState<ClientContactMessage | null>(null);
 
-  // If URL has ?id=xxx, inspect that message on load
-  const messageIdParam = searchParams.get("id");
+  // URL is single source of truth: derive filter state with useMemo
+  const filters = React.useMemo(() => {
+    const rawTab = searchParams.get("tab") || (searchParams.get("unread") === "true" ? "unread" : "all");
+    const tab = rawTab === "unread" ? "unread" : "all";
+    const q = searchParams.get("q") || searchParams.get("search") || "";
+    const id = searchParams.get("id") || null;
+    return { tab, q, id };
+  }, [searchParams]);
+
+  // Update URL helper using window.history.replaceState (avoids RSC refetch loop)
+  const updateQuery = React.useCallback((key: string, value: string | null) => {
+    const currentParams = new URLSearchParams(window.location.search);
+    const currentSerialized = currentParams.toString();
+
+    const newParams = new URLSearchParams(window.location.search);
+    if (value && value !== "all") {
+      newParams.set(key, value);
+    } else {
+      newParams.delete(key);
+    }
+
+    if (key === "q") {
+      newParams.delete("search");
+    }
+    if (key === "tab") {
+      newParams.delete("unread");
+    }
+
+    const newSerialized = newParams.toString();
+    if (newSerialized === currentSerialized) {
+      return;
+    }
+
+    const newUrl = `${window.location.pathname}${newSerialized ? `?${newSerialized}` : ""}`;
+    window.history.replaceState(null, "", newUrl);
+  }, []);
+
+  // Memoize TanStack Query key from stable primitives
+  const messagesQueryKey = React.useMemo(
+    () => ["admin", "messages", filters.tab, filters.q] as const,
+    [filters.tab, filters.q]
+  );
 
   const { data: messages = [], isLoading } = useQuery({
-    queryKey: ["admin", "messages", { activeTab, search }],
-    queryFn: () => listMessages({ unreadOnly: activeTab === "unread", search }),
+    queryKey: messagesQueryKey,
+    queryFn: () => listMessages({ unreadOnly: filters.tab === "unread", search: filters.q }),
   });
 
-  // Derived selected message: either explicitly selected or matching query param
-  const activeSelectedId = selectedId !== null ? selectedId : messageIdParam;
+  // Derived selected message from URL
   const selectedMessage = React.useMemo(() => {
-    if (!activeSelectedId) return null;
-    return messages.find((m) => m.id === activeSelectedId) || null;
-  }, [activeSelectedId, messages]);
+    if (!filters.id) return null;
+    return messages.find((m) => m.id === filters.id) || null;
+  }, [filters.id, messages]);
 
   // Mark read/unread mutation
   const toggleReadMutation = useMutation({
@@ -64,7 +100,7 @@ function MessagesPageContent() {
     mutationFn: (id: string) => deleteMessage(id),
     onSuccess: () => {
       showToast("Message deleted");
-      setSelectedId(null);
+      updateQuery("id", null);
       setDeleteCandidate(null);
       queryClient.invalidateQueries({ queryKey: ["admin", "messages"] });
       queryClient.invalidateQueries({ queryKey: ["admin", "dashboard-stats"] });
@@ -77,7 +113,7 @@ function MessagesPageContent() {
   const unreadCount = messages.filter((m) => !m.read).length;
 
   const handleSelectMessage = (msg: ClientContactMessage) => {
-    setSelectedId(msg.id);
+    updateQuery("id", msg.id);
     if (!msg.read) {
       toggleReadMutation.mutate({ id: msg.id, read: true });
     }
@@ -105,14 +141,14 @@ function MessagesPageContent() {
             { id: "all", label: "All Messages", count: messages.length },
             { id: "unread", label: "Unread", count: unreadCount },
           ]}
-          selectedId={activeTab}
-          onChange={(id) => setActiveTab(id as "all" | "unread")}
+          selectedId={filters.tab}
+          onChange={(id) => updateQuery("tab", id)}
         />
 
         <div className="w-full sm:w-72">
           <SearchInput
-            value={search}
-            onChange={setSearch}
+            value={filters.q}
+            onChange={(val) => updateQuery("q", val)}
             placeholder="Search inquiries..."
           />
         </div>
@@ -194,7 +230,7 @@ function MessagesPageContent() {
       {/* Message Detail SideSheet */}
       <SideSheet
         isOpen={Boolean(selectedMessage)}
-        onClose={() => setSelectedId(null)}
+        onClose={() => updateQuery("id", null)}
         title={selectedMessage?.name}
         subtitle={
           selectedMessage

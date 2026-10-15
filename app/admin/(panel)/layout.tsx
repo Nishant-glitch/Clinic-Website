@@ -121,7 +121,7 @@ function AdminPanelLayoutInner({
   const handleGlobalSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (globalSearch.trim()) {
-      router.push(`/admin/appointments?search=${encodeURIComponent(globalSearch.trim())}`);
+      router.push(`/admin/appointments?q=${encodeURIComponent(globalSearch.trim())}`);
       setGlobalSearch("");
     }
   };

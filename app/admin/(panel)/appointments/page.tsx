@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   listAppointments,
@@ -84,50 +84,108 @@ function AppointmentNotesEditor({
 }
 
 function AppointmentsPageContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const { isAdmin, user } = useAdminAuth();
   const { showToast } = useAdminToast();
 
-  // URL state
-  const statusParam = searchParams.get("status") || "all";
-  const searchParam = searchParams.get("search") || "";
-  const serviceParam = searchParams.get("service") || "all";
-  const pageParam = parseInt(searchParams.get("page") || "1", 10);
+  // URL is single source of truth: derive filter state with useMemo
+  const filters = React.useMemo(() => {
+    const status = searchParams.get("status") || "all";
+    const ref = searchParams.get("ref");
+    const q = searchParams.get("q") || searchParams.get("search") || ref || "";
+    const service = searchParams.get("service") || "all";
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    return {
+      status,
+      q,
+      service,
+      page: Number.isNaN(page) || page < 1 ? 1 : page,
+    };
+  }, [searchParams]);
+
+  // ?ref= handling: convert once on mount to the q filter, then remove ref from URL
+  const refHandled = React.useRef(false);
+  React.useEffect(() => {
+    if (refHandled.current) return;
+    refHandled.current = true;
+
+    const refParam = searchParams.get("ref");
+    if (refParam) {
+      const currentParams = new URLSearchParams(window.location.search);
+      const currentSerialized = currentParams.toString();
+
+      const newParams = new URLSearchParams(window.location.search);
+      newParams.set("q", refParam);
+      newParams.delete("ref");
+      newParams.delete("search");
+      newParams.delete("page");
+
+      const newSerialized = newParams.toString();
+      if (newSerialized !== currentSerialized) {
+        const newUrl = `${window.location.pathname}${newSerialized ? `?${newSerialized}` : ""}`;
+        window.history.replaceState(null, "", newUrl);
+      }
+    }
+  }, [searchParams]);
 
   // Local selection & inspection state
   const [selectedAppointment, setSelectedAppointment] = React.useState<ClientAppointment | null>(null);
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
 
-  // Update URL helper
-  const updateQuery = (key: string, value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
+  // Update URL helper using window.history.replaceState (avoids RSC refetch loop)
+  const updateQuery = React.useCallback((key: string, value: string) => {
+    const currentParams = new URLSearchParams(window.location.search);
+    const currentSerialized = currentParams.toString();
+
+    const newParams = new URLSearchParams(window.location.search);
     if (value && value !== "all") {
-      params.set(key, value);
+      newParams.set(key, value);
     } else {
-      params.delete(key);
+      newParams.delete(key);
     }
+
+    if (key === "q") {
+      newParams.delete("search");
+      newParams.delete("ref");
+    }
+
     // Reset to page 1 on filter changes
     if (key !== "page") {
-      params.delete("page");
+      newParams.delete("page");
     }
-    router.replace(`/admin/appointments?${params.toString()}`);
-  };
+
+    const newSerialized = newParams.toString();
+    if (newSerialized === currentSerialized) {
+      return;
+    }
+
+    const newUrl = `${window.location.pathname}${newSerialized ? `?${newSerialized}` : ""}`;
+    window.history.replaceState(null, "", newUrl);
+  }, []);
+
+  // Memoize TanStack Query key from stable primitives
+  const appointmentsQueryKey = React.useMemo(
+    () => [
+      "admin",
+      "appointments",
+      filters.status,
+      filters.q,
+      filters.service,
+      filters.page,
+    ] as const,
+    [filters.status, filters.q, filters.service, filters.page]
+  );
 
   // Queries
   const { data: appointmentsResult, isLoading } = useQuery({
-    queryKey: [
-      "admin",
-      "appointments",
-      { status: statusParam, search: searchParam, service: serviceParam, page: pageParam },
-    ],
+    queryKey: appointmentsQueryKey,
     queryFn: () =>
       listAppointments({
-        status: statusParam as AppointmentStatus | "all",
-        search: searchParam,
-        service: serviceParam,
-        page: pageParam,
+        status: filters.status as AppointmentStatus | "all",
+        search: filters.q,
+        service: filters.service,
+        page: filters.page,
         limit: 20,
       }),
   });
@@ -304,7 +362,7 @@ function AppointmentsPageContent() {
       <div className="flex flex-col gap-3">
         <FilterChips
           options={filterOptions}
-          selectedId={statusParam}
+          selectedId={filters.status}
           onChange={(id) => updateQuery("status", id)}
         />
 
@@ -312,8 +370,8 @@ function AppointmentsPageContent() {
         <div className="flex flex-col sm:flex-row items-center gap-3">
           <div className="w-full sm:w-80">
             <SearchInput
-              value={searchParam}
-              onChange={(val) => updateQuery("search", val)}
+              value={filters.q}
+              onChange={(val) => updateQuery("q", val)}
               placeholder="Search name, phone, notes..."
             />
           </div>
@@ -321,7 +379,7 @@ function AppointmentsPageContent() {
           {/* Service Dropdown Filter */}
           <div className="w-full sm:w-60">
             <select
-              value={serviceParam}
+              value={filters.service}
               onChange={(e) => updateQuery("service", e.target.value)}
               className="w-full rounded-full bg-surface border border-outline-variant/60 px-4 py-2 text-xs font-medium text-on-surface focus:outline-none focus:border-primary"
             >

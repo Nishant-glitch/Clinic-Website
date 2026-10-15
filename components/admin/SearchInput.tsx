@@ -26,22 +26,38 @@ export function SearchInput({
   );
   const [prevControlled, setPrevControlled] = React.useState(controlledValue);
 
+  const onChangeRef = React.useRef(onChange);
+  React.useEffect(() => {
+    onChangeRef.current = onChange;
+  });
+
+  const isUserTyping = React.useRef(false);
+
   if (controlledValue !== prevControlled) {
     setPrevControlled(controlledValue);
     setInternalValue(controlledValue !== undefined ? controlledValue : defaultValue);
   }
 
   React.useEffect(() => {
+    if (!isUserTyping.current) return;
+
     const handler = setTimeout(() => {
-      onChange(internalValue);
+      isUserTyping.current = false;
+      onChangeRef.current(internalValue);
     }, debounceMs);
 
     return () => clearTimeout(handler);
-  }, [internalValue, debounceMs, onChange]);
+  }, [internalValue, debounceMs]);
 
   const handleClear = () => {
+    isUserTyping.current = false;
     setInternalValue("");
-    onChange("");
+    onChangeRef.current("");
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    isUserTyping.current = true;
+    setInternalValue(e.target.value);
   };
 
   return (
@@ -50,7 +66,7 @@ export function SearchInput({
       <input
         type="text"
         value={internalValue}
-        onChange={(e) => setInternalValue(e.target.value)}
+        onChange={handleInputChange}
         placeholder={placeholder}
         className="w-full rounded-full bg-surface-container-high border border-transparent px-9 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:bg-surface focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
       />
