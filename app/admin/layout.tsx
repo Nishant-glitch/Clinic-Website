@@ -1,14 +1,29 @@
 import * as React from "react";
+import type { Metadata } from "next";
+import { AdminProviders } from "@/components/admin/AdminProviders";
 
-// TODO: In Step 3/6, implement authenticated admin dashboard sidebar, header with active user profile, and role-based navigation guards.
-export default function AdminLayout({
+export const metadata: Metadata = {
+  title: "Admin Panel | Clinic Management",
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
+};
+
+export default function AdminRootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-surface-container-low text-on-surface">
-      {children}
-    </div>
+    <AdminProviders>
+      <div className="min-h-screen bg-surface-container-low text-on-surface antialiased font-roboto">
+        {children}
+      </div>
+    </AdminProviders>
   );
 }

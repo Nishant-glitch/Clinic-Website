@@ -208,6 +208,7 @@ export const userConverter: FirestoreDataConverter<ServerAppUser> = {
       email: data.email ?? "",
       name: data.name ?? "",
       role: data.role ?? "staff",
+      status: (data.status as "active" | "disabled") ?? "active",
       createdAt: data.createdAt as Timestamp,
       lastLoginAt: data.lastLoginAt as Timestamp | undefined,
     };

@@ -2,7 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-  label: string;
+  label?: React.ReactNode;
   error?: string;
   helperText?: string;
 }
@@ -16,13 +16,15 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 
     return (
       <div className="w-full flex flex-col gap-1">
-        <label
-          htmlFor={textareaId}
-          className="text-xs font-medium text-md-on-surface-variant flex items-center gap-1"
-        >
-          {label}
-          {required && <span className="text-md-error">*</span>}
-        </label>
+        {label && (
+          <label
+            htmlFor={textareaId}
+            className="text-xs font-medium text-md-on-surface-variant flex items-center gap-1"
+          >
+            {label}
+            {required && <span className="text-md-error">*</span>}
+          </label>
+        )}
         <div className="relative">
           <textarea
             id={textareaId}

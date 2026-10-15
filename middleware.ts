@@ -16,6 +16,15 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
+    // TODO(step-6): remove bypass
+    // Temporary dev bypass: only active in development mode
+    if (
+      process.env.NODE_ENV === "development" &&
+      process.env.ADMIN_DEV_BYPASS === "true"
+    ) {
+      return NextResponse.next();
+    }
+
     // Check for "session" cookie (also accepts "__session" for Firebase hosting compatibility)
     const sessionCookie =
       request.cookies.get("session")?.value ||

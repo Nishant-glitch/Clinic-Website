@@ -8,6 +8,14 @@ export type PreferredTime = "morning" | "evening" | "any";
 
 export type Role = "admin" | "staff";
 
+export interface AppointmentActivity {
+  id: string;
+  type: "status_change" | "note" | "created";
+  description: string;
+  userName: string;
+  timestamp: string;
+}
+
 export interface Appointment<TDate = TimestampField> {
   id: string;
   name: string;
@@ -19,6 +27,7 @@ export interface Appointment<TDate = TimestampField> {
   consent: boolean;
   status: AppointmentStatus;
   notes?: string;
+  activity?: AppointmentActivity[];
   createdAt: TDate;
   updatedAt: TDate;
 }
@@ -158,6 +167,7 @@ export interface AppUser<TDate = TimestampField> {
   email: string;
   name: string;
   role: Role;
+  status: "active" | "disabled";
   createdAt: TDate;
   lastLoginAt?: TDate;
 }
