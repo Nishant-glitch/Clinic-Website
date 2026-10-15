@@ -124,7 +124,7 @@ function AppointmentsPageContent() {
     ],
     queryFn: () =>
       listAppointments({
-        status: statusParam,
+        status: statusParam as AppointmentStatus | "all",
         search: searchParam,
         service: serviceParam,
         page: pageParam,
@@ -159,7 +159,7 @@ function AppointmentsPageContent() {
   // Bulk update mutation
   const bulkStatusMutation = useMutation({
     mutationFn: ({ ids, status }: { ids: string[]; status: AppointmentStatus }) =>
-      bulkUpdateAppointmentStatus(ids, status, user.name),
+      bulkUpdateAppointmentStatus(ids, status),
     onSuccess: (_, vars) => {
       showToast(`Updated ${vars.ids.length} appointments to ${vars.status}`);
       setSelectedIds([]);

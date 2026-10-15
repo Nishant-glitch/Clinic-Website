@@ -78,7 +78,7 @@ export function ContactForm({ className = "", onSuccess }: ContactFormProps) {
         return;
       }
 
-      const refId = result.data?.id || "MSG-CONFIRMED";
+      const refId = result.data?.reference || result.data?.id || "MSG-CONFIRMED";
       setSuccessData({ id: refId, name: data.name });
       onSuccess?.(refId);
     } catch {

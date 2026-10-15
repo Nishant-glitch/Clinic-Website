@@ -224,3 +224,23 @@
 | [`storage.rules`](file:///Users/nishantsingh/clinic-website/storage.rules) | Cloud Storage rules: public read on `/public/**`, admin-only upload, 5MB image filter. |
 | [`firebase.json`](file:///Users/nishantsingh/clinic-website/firebase.json) & [`.firebaserc`](file:///Users/nishantsingh/clinic-website/.firebaserc) | Firebase CLI deployment configuration. |
 | [`app/api/health/route.ts`](file:///Users/nishantsingh/clinic-website/app/api/health/route.ts) | System health endpoint pinging Firestore without exposing secrets. |
+
+---
+
+## 9. Step 4 - Backend & APIs
+
+### 9.1 Architecture Layers
+1. **HTTP Routes (`app/api/**/route.ts`)**: Thin entrypoints that validate content-type/body size, invoke Zod parsers, verify roles with `requireRole()`, and delegate to service functions. Wrapped by `withHandler()`.
+2. **Error Handling (`lib/server/errors.ts`)**: `AppError` and `withHandler()` automatically generate an `x-request-id` (UUIDv4) for every request, catch and sanitize errors, and prevent stack traces, database internals, and secrets from reaching clients.
+3. **Business Services (`lib/server/services/*.ts`)**: Orchestrates business rules:
+   - `appointmentService`: Honeypot bot protection, title-casing/sanitization, 10-minute duplicate submission guard, idempotency header handling, `APT-YYMMDD-XXXX` reference generation, and non-blocking Resend email alerts.
+   - `messageService`: Inquiry processing, honeypot guard, `MSG-YYMMDD-XXXX` reference generation, and clinic notifications.
+   - `contentService`: CRUD, unique slug generation for services, cache revalidation, and Cloud Storage image cleanup.
+   - `settingsService`: Clinic settings management with tag-based cache revalidation (`"settings"`).
+   - `statsService`: Operational dashboard KPIs and 14-day request volume histogram aligned with Asia/Kolkata day boundaries.
+   - `userService`: Staff user management with self-role alteration and self-disable protection.
+4. **Data Repositories (`lib/server/repositories/*.ts`)**: Isolated Firestore read/write operations using typed converters from `lib/firebase/collections.ts`. Transactional status progression enforces:
+   `new` -> `called` / `cancelled` -> `confirmed` / `cancelled` -> `visited` / `cancelled` (reopening `cancelled` is restricted to admins).
+5. **Caching & ISR (`lib/data/index.ts`)**: Server components fetch live Firestore data cached via `unstable_cache` (`revalidate: 3600`) tagged by collection (`"services"`, `"testimonials"`, `"faqs"`, `"gallery"`, `"settings"`). Gracefully falls back to placeholder data if Firestore collections are empty.
+6. **Email Notifications (`lib/email/index.ts`)**: Resend integration sending responsive HTML email templates with `tel:` links and tracking references to `CLINIC_NOTIFY_EMAIL`. In dev mode without API keys, logs preview to console without throwing.
+

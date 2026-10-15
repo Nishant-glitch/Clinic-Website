@@ -18,6 +18,7 @@ export interface AppointmentActivity {
 
 export interface Appointment<TDate = TimestampField> {
   id: string;
+  reference?: string;
   name: string;
   phone: string;
   preferredDate?: string; // YYYY-MM-DD
@@ -25,6 +26,11 @@ export interface Appointment<TDate = TimestampField> {
   service?: string;
   message?: string;
   consent: boolean;
+  consentAt?: string;
+  privacyPolicyVersion?: string;
+  source?: "website" | "popup";
+  idempotencyKey?: string;
+  emailStatus?: "sent" | "failed" | "skipped";
   status: AppointmentStatus;
   notes?: string;
   activity?: AppointmentActivity[];
@@ -34,12 +40,16 @@ export interface Appointment<TDate = TimestampField> {
 
 export interface ContactMessage<TDate = TimestampField> {
   id: string;
+  reference?: string;
   name: string;
   phone: string;
   email?: string;
   subject?: string;
   message: string;
   consent: boolean;
+  consentAt?: string;
+  privacyPolicyVersion?: string;
+  emailStatus?: "sent" | "failed" | "skipped";
   read?: boolean;
   archived?: boolean;
   createdAt: TDate;
@@ -84,8 +94,11 @@ export interface GalleryImage<TDate = TimestampField> {
   id: string;
   title: string;
   url: string;
+  storagePath?: string;
   category: GalleryCategory;
   caption?: string;
+  width?: number;
+  height?: number;
   order: number;
   createdAt?: TDate;
 }

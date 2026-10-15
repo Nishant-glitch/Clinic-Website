@@ -1,33 +1,41 @@
-import { ok, fail } from "@/lib/api";
-import { contactMessageSchema } from "@/lib/validators";
+import { ok } from "@/lib/api";
+import { withHandler, AppError } from "@/lib/server/errors";
+import { contactMessageSchema } from "@/lib/validators/contact";
+import * as service from "@/lib/server/services/messageService";
 
-// TODO(step-4): save to Firestore + send email
-export async function POST(request: Request) {
-  try {
-    const json = await request.json();
-    const result = contactMessageSchema.safeParse(json);
+const MAX_BODY_BYTES = 10 * 1024; // 10KB
 
-    if (!result.success) {
-      return fail(
-        "VALIDATION_ERROR",
-        "Invalid contact message payload",
-        400,
-        result.error.flatten().fieldErrors
-      );
-    }
-
-    const tempId = `TEMP-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-
-    return ok({
-      id: tempId,
-      message: "Your message has been received. Thank you for contacting our clinic.",
-      contact: {
-        name: result.data.name,
-        phone: result.data.phone,
-        email: result.data.email,
-      },
-    });
-  } catch {
-    return fail("INVALID_PAYLOAD", "Failed to parse JSON request body", 400);
+export const POST = withHandler(async (request: Request) => {
+  const contentType = request.headers.get("content-type") || "";
+  if (!contentType.includes("application/json")) {
+    throw new AppError("UNSUPPORTED_MEDIA_TYPE", "Content-Type must be application/json", 415);
   }
-}
+
+  const contentLength = request.headers.get("content-length");
+  if (contentLength && parseInt(contentLength, 10) > MAX_BODY_BYTES) {
+    throw new AppError("PAYLOAD_TOO_LARGE", "Request body exceeds maximum size of 10KB", 413);
+  }
+
+  const rawText = await request.text();
+  if (rawText.length > MAX_BODY_BYTES) {
+    throw new AppError("PAYLOAD_TOO_LARGE", "Request body exceeds maximum size of 10KB", 413);
+  }
+
+  let json: unknown;
+  try {
+    json = JSON.parse(rawText);
+  } catch {
+    throw new AppError("INVALID_JSON", "Malformed JSON payload", 400);
+  }
+
+  const parsed = contactMessageSchema.parse(json);
+  const result = await service.createContactMessage(parsed);
+
+  return ok(
+    {
+      reference: result.reference,
+      message: "Thank you for reaching out. We have received your inquiry and will contact you shortly.",
+    },
+    { status: 201 }
+  );
+});

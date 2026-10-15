@@ -34,7 +34,7 @@ export default function AdminDashboardPage() {
   // Quick "Mark Called" mutation
   const markCalledMutation = useMutation({
     mutationFn: (id: string) =>
-      updateAppointment(id, { status: "called", changedBy: "Dashboard Quick Action" }),
+      updateAppointment(id, { status: "called" }),
     onSuccess: () => {
       showToast("Appointment marked as called");
       queryClient.invalidateQueries({ queryKey: ["admin", "dashboard-stats"] });

@@ -22,12 +22,8 @@ export const contactMessageSchema = z.object({
   consent: z.boolean().refine((val) => val === true, {
     message: "Consent is required to submit inquiry",
   }),
-  // Hidden honeypot field for bot protection. Must be empty.
-  website: z
-    .string()
-    .max(0, "Bot detected")
-    .optional()
-    .or(z.literal("")),
+  // Hidden honeypot field for bot protection. If filled, handler returns fake success without saving.
+  website: z.string().optional(),
 });
 
 export type ContactMessageInput = z.infer<typeof contactMessageSchema>;

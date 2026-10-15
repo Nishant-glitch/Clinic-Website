@@ -34,8 +34,19 @@ export function getFirebaseAdminApp(): App {
   return adminAppInstance;
 }
 
+let firestoreInitialized = false;
+
 export function getAdminFirestore(): Firestore {
-  return getFirestore(getFirebaseAdminApp());
+  const db = getFirestore(getFirebaseAdminApp());
+  if (!firestoreInitialized) {
+    try {
+      db.settings({ ignoreUndefinedProperties: true });
+      firestoreInitialized = true;
+    } catch {
+      // already initialized
+    }
+  }
+  return db;
 }
 
 export function getAdminAuth(): Auth {

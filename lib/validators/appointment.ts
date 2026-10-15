@@ -51,12 +51,9 @@ export const appointmentRequestSchema = z.object({
   consent: z.boolean().refine((val) => val === true, {
     message: "You must consent to being contacted by our clinic (DPDP Act 2023)",
   }),
-  // Hidden honeypot field for bot protection. Must be empty.
-  website: z
-    .string()
-    .max(0, "Bot detected")
-    .optional()
-    .or(z.literal("")),
+  source: z.enum(["website", "popup"]).default("website"),
+  // Hidden honeypot field for bot protection. If filled, handler returns fake success without saving.
+  website: z.string().optional(),
 });
 
 export type AppointmentRequestInput = z.input<typeof appointmentRequestSchema>;

@@ -119,7 +119,7 @@ export function AppointmentForm({
         return;
       }
 
-      const refId = result.data?.id || "REQ-CONFIRMED";
+      const refId = result.data?.reference || result.data?.id || "APT-CONFIRMED";
       setSuccessData({ id: refId, name: data.name });
       onSuccess?.(refId);
     } catch {
