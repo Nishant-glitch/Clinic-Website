@@ -1,16 +1,21 @@
+"use client";
+
 import * as React from "react";
 import Image from "next/image";
 import { Calendar, Phone, Star, ShieldCheck, Clock } from "lucide-react";
 import { siteConfig } from "@/lib/config/site";
 import {
+  Button,
   ButtonLink,
   Badge,
   Container,
   BlurShapes,
 } from "@/components/ui";
+import { useBooking } from "@/components/booking";
 import { MotionReveal } from "@/components/ui/MotionReveal";
 
 export function Hero() {
+  const { openBooking } = useBooking();
   return (
     <section className="pt-4 pb-8 md:pt-8 md:pb-12">
       <Container>
@@ -49,14 +54,15 @@ export function Hero() {
 
               <MotionReveal delay={0.4}>
                 <div className="flex flex-wrap items-center gap-3.5 pt-1">
-                  <ButtonLink
-                    href="/appointment"
+                  <Button
+                    type="button"
                     variant="filled"
                     size="lg"
+                    onClick={() => openBooking()}
                     leftIcon={<Calendar className="h-5 w-5" aria-hidden="true" />}
                   >
                     Book Appointment
-                  </ButtonLink>
+                  </Button>
                   <ButtonLink
                     href={`tel:${siteConfig.phone}`}
                     variant="outlined"

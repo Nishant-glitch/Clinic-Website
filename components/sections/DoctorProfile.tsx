@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import Image from "next/image";
 import { Award, Clock, Calendar, ShieldCheck, CheckCircle2 } from "lucide-react";
@@ -5,12 +7,14 @@ import { siteConfig } from "@/lib/config/site";
 import {
   Container,
   Badge,
-  ButtonLink,
+  Button,
 } from "@/components/ui";
+import { useBooking } from "@/components/booking";
 import { MotionReveal } from "@/components/ui/MotionReveal";
 
 export function DoctorProfile() {
   const { doctor } = siteConfig;
+  const { openBooking } = useBooking();
 
   const highlights = [
     "Expert in Type-2 Diabetes & Hypertension profiling",
@@ -60,10 +64,10 @@ export function DoctorProfile() {
               </MotionReveal>
 
               <MotionReveal delay={0.1}>
-                <h2 className="headline-md sm:headline-lg font-bold text-md-on-background tracking-tight">
+                <h2 className="headline-lg md:display-sm font-bold text-md-on-background tracking-tight">
                   {doctor.name}
                 </h2>
-                <p className="text-sm font-semibold text-md-primary mt-1">
+                <p className="text-sm font-medium text-md-primary mt-1">
                   {doctor.qualification} • {doctor.specialization}
                 </p>
               </MotionReveal>
@@ -74,19 +78,19 @@ export function DoctorProfile() {
                 </p>
               </MotionReveal>
 
-              {/* Clinical Highlights */}
+              {/* Highlights List */}
               <MotionReveal delay={0.3} className="w-full">
-                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
-                  {highlights.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-xs text-md-on-surface-variant">
-                      <CheckCircle2 className="h-4 w-4 text-md-primary flex-shrink-0 mt-0.5" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                  {highlights.map((item) => (
+                    <div key={item} className="flex items-center gap-2 text-xs text-md-on-surface-variant font-medium">
+                      <CheckCircle2 className="h-4 w-4 text-md-primary flex-shrink-0" />
                       <span>{item}</span>
-                    </li>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </MotionReveal>
 
-              {/* OPD Schedule Box */}
+              {/* OPD Schedule Card */}
               <MotionReveal delay={0.4} className="w-full">
                 <div className="p-4 rounded-2xl bg-md-surface-container-low border border-md-outline/15 flex items-center gap-3">
                   <Clock className="h-5 w-5 text-md-primary flex-shrink-0" />
@@ -99,14 +103,15 @@ export function DoctorProfile() {
 
               {/* Action Button */}
               <MotionReveal delay={0.5} className="pt-2">
-                <ButtonLink
-                  href="/appointment"
+                <Button
+                  type="button"
                   variant="filled"
                   size="lg"
+                  onClick={() => openBooking()}
                   leftIcon={<Calendar className="h-5 w-5" aria-hidden="true" />}
                 >
                   Book with Dr. Sharma
-                </ButtonLink>
+                </Button>
               </MotionReveal>
             </div>
           </div>

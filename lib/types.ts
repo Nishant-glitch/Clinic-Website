@@ -36,25 +36,46 @@ export interface ContactMessage<TDate = TimestampField> {
   createdAt: TDate;
 }
 
+export interface ServiceTreatmentStep {
+  step: number;
+  title: string;
+  description: string;
+}
+
+export interface ServiceFaq {
+  question: string;
+  answer: string;
+}
+
 export interface Service<TDate = TimestampField> {
   id: string;
   title: string;
   slug: string;
+  category?: string;
+  image?: string;
   shortDescription: string;
   fullDescription: string;
+  content?: string;
   icon?: string;
   symptoms?: string[];
+  treatmentProcess?: ServiceTreatmentStep[];
+  benefits?: string[];
+  duration?: string;
+  whatToExpect?: string;
+  faqs?: ServiceFaq[];
   active: boolean;
   order: number;
   createdAt?: TDate;
   updatedAt?: TDate;
 }
 
+export type GalleryCategory = "clinic" | "treatments" | "events" | "team";
+
 export interface GalleryImage<TDate = TimestampField> {
   id: string;
   title: string;
   url: string;
-  category: "clinic" | "equipment" | "consultation" | "facility";
+  category: GalleryCategory;
   caption?: string;
   order: number;
   createdAt?: TDate;
@@ -65,7 +86,10 @@ export interface Testimonial<TDate = TimestampField> {
   patientName: string;
   rating: number; // 1-5
   treatment?: string;
+  treatmentCategory?: string;
   review: string;
+  text?: string;
+  date?: string;
   verified: boolean;
   featured: boolean;
   createdAt?: TDate;

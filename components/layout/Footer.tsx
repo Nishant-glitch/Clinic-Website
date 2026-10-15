@@ -80,8 +80,13 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-md-primary transition-colors text-xs opacity-80">
+                <Link href="/privacy-policy" className="hover:text-md-primary transition-colors text-xs opacity-80">
                   Privacy Policy (DPDP 2023)
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="hover:text-md-primary transition-colors text-xs opacity-80">
+                  Terms &amp; Medical Disclaimer
                 </Link>
               </li>
             </ul>
@@ -165,7 +170,7 @@ export function Footer() {
               <ShieldCheck className="h-4 w-4" />
               <span>Compliant with India DPDP Act 2023</span>
             </span>
-            <Link href="/privacy" className="hover:underline">
+            <Link href="/privacy-policy" className="hover:underline">
               Privacy &amp; Patient Rights
             </Link>
           </div>

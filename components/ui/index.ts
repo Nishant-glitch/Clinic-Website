@@ -12,3 +12,6 @@ export * from "./Container";
 export * from "./BlurShapes";
 export * from "./Accordion";
 export * from "./Toast";
+export * from "./Breadcrumb";
+export * from "./PageHero";
+export * from "./MotionReveal";

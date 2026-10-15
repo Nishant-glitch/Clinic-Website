@@ -11,24 +11,30 @@ export interface ToastMessage {
 }
 
 export interface ToastProps {
-  toast: ToastMessage | null;
+  toast?: ToastMessage | null;
+  message?: string;
+  type?: "success" | "error" | "info";
   onClose: () => void;
   duration?: number;
 }
 
-export function Toast({ toast, onClose, duration = 4000 }: ToastProps) {
+export function Toast({ toast, message, type = "info", onClose, duration = 4000 }: ToastProps) {
+  const activeToast = React.useMemo(() => {
+    return toast || (message ? { id: "toast-direct", type, message } : null);
+  }, [toast, message, type]);
+
   React.useEffect(() => {
-    if (!toast) return;
+    if (!activeToast) return;
     const timer = setTimeout(() => {
       onClose();
     }, duration);
     return () => clearTimeout(timer);
-  }, [toast, onClose, duration]);
+  }, [activeToast, onClose, duration]);
 
-  if (!toast) return null;
+  if (!activeToast) return null;
 
-  const isSuccess = toast.type === "success";
-  const isError = toast.type === "error";
+  const isSuccess = activeToast.type === "success";
+  const isError = activeToast.type === "error";
 
   return (
     <div
@@ -47,7 +53,7 @@ export function Toast({ toast, onClose, duration = 4000 }: ToastProps) {
         <div className="flex items-center gap-3">
           {isSuccess && <CheckCircle2 className="h-5 w-5 text-emerald-600 flex-shrink-0" />}
           {isError && <AlertCircle className="h-5 w-5 text-md-error flex-shrink-0" />}
-          <p className="text-sm font-medium leading-tight">{toast.message}</p>
+          <p className="text-sm font-medium leading-tight">{activeToast.message}</p>
         </div>
         <button
           type="button"

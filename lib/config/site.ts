@@ -41,6 +41,7 @@ export interface SiteConfig {
   shortName: string;
   tagline: string;
   description: string;
+  url: string;
   phone: string;
   phoneDisplay: string;
   whatsapp: string;
@@ -68,7 +69,9 @@ export const siteConfig: SiteConfig = {
   name: "Dr. Sharma's Family Care Clinic",
   shortName: "Family Care Clinic",
   tagline: "Comprehensive, Compassionate Healthcare for Your Family",
-  description: "Experienced medical consultation, preventive wellness checkups, and chronic illness management in a modern, hygienic facility.",
+  description:
+    "Evidence-based, personalized outpatient medical care by Dr. Rajiv Sharma in Andheri West, Mumbai.",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
   phone: "+919876543210",
   phoneDisplay: "+91 98765 43210",
   whatsapp: "+919876543210",

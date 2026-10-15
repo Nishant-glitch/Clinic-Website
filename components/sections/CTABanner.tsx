@@ -1,10 +1,15 @@
+"use client";
+
 import * as React from "react";
 import { Calendar, MessageCircle, Phone } from "lucide-react";
 import { siteConfig } from "@/lib/config/site";
-import { Container, ButtonLink } from "@/components/ui";
+import { Container, Button } from "@/components/ui";
+import { useBooking } from "@/components/booking";
 import { MotionReveal } from "@/components/ui/MotionReveal";
 
 export function CTABanner() {
+  const { openBooking } = useBooking();
+
   const whatsappUrl = `https://wa.me/${siteConfig.whatsapp.replace(/\+/g, "")}?text=${encodeURIComponent(
     siteConfig.whatsappMessage
   )}`;
@@ -35,15 +40,16 @@ export function CTABanner() {
               </p>
 
               <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-                <ButtonLink
-                  href="/appointment"
+                <Button
+                  type="button"
                   variant="filled"
                   size="lg"
+                  onClick={() => openBooking()}
                   className="bg-white text-md-primary hover:bg-white/95 shadow-md"
                   leftIcon={<Calendar className="h-5 w-5" aria-hidden="true" />}
                 >
                   Book Appointment Now
-                </ButtonLink>
+                </Button>
 
                 <a
                   href={whatsappUrl}

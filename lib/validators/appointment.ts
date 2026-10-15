@@ -59,4 +59,5 @@ export const appointmentRequestSchema = z.object({
     .or(z.literal("")),
 });
 
-export type AppointmentRequestInput = z.infer<typeof appointmentRequestSchema>;
+export type AppointmentRequestInput = z.input<typeof appointmentRequestSchema>;
+export type AppointmentRequestOutput = z.output<typeof appointmentRequestSchema>;

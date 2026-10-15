@@ -13,7 +13,7 @@ export function FloatingActions() {
   return (
     <div
       aria-label="Quick contact actions"
-      className="fixed bottom-6 right-6 z-40 flex flex-col gap-3 items-end pointer-events-auto select-none"
+      className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-40 flex flex-col gap-3 items-end pointer-events-auto select-none"
     >
       {/* Call FAB */}
       <a

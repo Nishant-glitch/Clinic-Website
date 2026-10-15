@@ -1,7 +1,7 @@
 import { ok, fail } from "@/lib/api";
 import { contactMessageSchema } from "@/lib/validators";
 
-// TODO: In Step 4 (APIs & backend logic), persist to Firestore via collections helper and dispatch Resend notification email.
+// TODO(step-4): save to Firestore + send email
 export async function POST(request: Request) {
   try {
     const json = await request.json();
@@ -16,11 +16,15 @@ export async function POST(request: Request) {
       );
     }
 
+    const tempId = `TEMP-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+
     return ok({
+      id: tempId,
       message: "Your message has been received. Thank you for contacting our clinic.",
       contact: {
         name: result.data.name,
         phone: result.data.phone,
+        email: result.data.email,
       },
     });
   } catch {

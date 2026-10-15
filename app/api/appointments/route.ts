@@ -1,7 +1,7 @@
 import { ok, fail } from "@/lib/api";
 import { appointmentRequestSchema } from "@/lib/validators";
 
-// TODO: In Step 4 (APIs & backend logic), persist to Firestore via collections helper, trigger Resend notification email, and enforce rate limits.
+// TODO(step-4): save to Firestore + send email
 export async function POST(request: Request) {
   try {
     const json = await request.json();
@@ -16,12 +16,17 @@ export async function POST(request: Request) {
       );
     }
 
+    const tempId = `TEMP-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+
     return ok({
+      id: tempId,
       message: "Appointment request received. Our clinic team will call you back shortly.",
       request: {
         name: result.data.name,
         phone: result.data.phone,
+        preferredDate: result.data.preferredDate,
         preferredTime: result.data.preferredTime,
+        service: result.data.service,
       },
     });
   } catch {

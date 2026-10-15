@@ -5,7 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Phone, Calendar, Stethoscope } from "lucide-react";
 import { siteConfig } from "@/lib/config/site";
-import { ButtonLink } from "@/components/ui";
+import { Button } from "@/components/ui";
+import { useBooking } from "@/components/booking";
 import { MobileNav } from "./MobileNav";
 import { cn } from "@/lib/utils";
 
@@ -20,6 +21,7 @@ const navLinks = [
 
 export function Header() {
   const pathname = usePathname();
+  const { openBooking } = useBooking();
 
   return (
     <header className="sticky top-0 z-40 w-full bg-md-background/90 backdrop-blur-md border-b border-md-outline/10 transition-colors">
@@ -74,14 +76,15 @@ export function Header() {
             <span>{siteConfig.phoneDisplay}</span>
           </a>
 
-          <ButtonLink
-            href="/appointment"
+          <Button
+            type="button"
             variant="filled"
             size="md"
+            onClick={() => openBooking()}
             leftIcon={<Calendar className="h-4 w-4" aria-hidden="true" />}
           >
             Book Appointment
-          </ButtonLink>
+          </Button>
         </div>
 
         {/* Mobile Nav Trigger */}

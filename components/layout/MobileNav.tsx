@@ -5,7 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, Phone, Calendar, Clock, MapPin, MessageCircle } from "lucide-react";
 import { siteConfig } from "@/lib/config/site";
-import { ButtonLink, IconButton } from "@/components/ui";
+import { Button, IconButton } from "@/components/ui";
+import { useBooking } from "@/components/booking";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -20,6 +21,7 @@ const navLinks = [
 export function MobileNav() {
   const [isOpen, setIsOpen] = React.useState(false);
   const pathname = usePathname();
+  const { openBooking } = useBooking();
   const drawerRef = React.useRef<HTMLDivElement>(null);
   const closeButtonRef = React.useRef<HTMLButtonElement>(null);
 
@@ -148,16 +150,19 @@ export function MobileNav() {
 
         {/* Footer info & CTAs */}
         <div className="pt-6 border-t border-md-outline/15 space-y-4">
-          <ButtonLink
-            href="/appointment"
+          <Button
+            type="button"
             variant="filled"
             size="md"
-            onClick={() => setIsOpen(false)}
+            onClick={() => {
+              setIsOpen(false);
+              openBooking();
+            }}
             className="w-full justify-center"
             leftIcon={<Calendar className="h-4 w-4" />}
           >
             Book Appointment
-          </ButtonLink>
+          </Button>
 
           <a
             href={whatsappHref}
